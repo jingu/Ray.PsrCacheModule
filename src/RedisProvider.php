@@ -5,45 +5,57 @@ declare(strict_types=1);
 namespace Ray\PsrCacheModule;
 
 use Ray\Di\ProviderInterface;
+use Ray\PsrCacheModule\Annotation\RedisCluster as RedisClusterAnnotation;
 use Ray\PsrCacheModule\Annotation\RedisConfig;
 use Ray\PsrCacheModule\Exception\RedisConnectionException;
 use Redis;
 
+use RedisCluster;
 use function sprintf;
 
-/** @implements ProviderInterface<Redis> */
+/** @implements ProviderInterface<Redis|RedisCluster> */
 class RedisProvider implements ProviderInterface
 {
     /** @var list<string> */
-    private $server;
+    private $servers;
+    private bool $cluster;
 
     /**
-     * @param list<string> $server
+     * @param list<string> $servers
      *
      * @RedisConfig("server")
+     * @RedisClusterAnnotation("cluster")
      */
-    #[RedisConfig('server')]
-    public function __construct(array $server)
+    #[RedisConfig('servers')]
+    #[RedisClusterAnnotation('cluster')]
+    public function __construct(array $servers, bool $cluster)
     {
-        $this->server = $server;
+        $this->servers = $servers;
+        $this->cluster = $cluster;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function get(): Redis
+    public function get(): Redis|RedisCluster
     {
+        if ($this->cluster) {
+            return new RedisCluster(null, $this->servers);
+        }
+
         $redis = new Redis();
-        $host = $this->server[0];
-        $port = (int) $this->server[1];
-        $connected = $redis->connect($host, $port);
-        if (isset($this->server[2])) {
-            $dbIndex = (int) $this->server[2];
-            $redis->select($dbIndex);
+        [$host, $port] = explode(':', $this->servers[0], 2);
+        if (strpos($port, ':') !== false) {
+            [$port, $dbIndex] = explode(':', $port, 2);
+        }
+
+        $connected = $redis->connect($host, (int) $port);
+        if (isset($dbIndex)) {
+            $redis->select((int) $dbIndex);
         }
 
         if (! $connected) {
-            throw new RedisConnectionException(sprintf('%s:%s', $host, $port)); // @codeCoverageIgnore
+            throw new RedisConnectionException(sprintf('%s:%s:%s', $host, $port, $dbIndex)); // @codeCoverageIgnore
         }
 
         return $redis;

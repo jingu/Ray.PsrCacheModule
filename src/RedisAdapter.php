@@ -8,6 +8,7 @@ use Ray\Di\Di\Named;
 use Ray\Di\ProviderInterface;
 use Ray\PsrCacheModule\Annotation\CacheNamespace;
 use Redis;
+use RedisCluster;
 use Serializable;
 use Symfony\Component\Cache\Adapter\RedisAdapter as OriginAdapter;
 use Symfony\Component\Cache\Marshaller\MarshallerInterface;
@@ -20,7 +21,7 @@ class RedisAdapter extends OriginAdapter implements Serializable
     use SerializableTrait;
 
     /**
-     * @param ProviderInterface<Redis> $redisProvider
+     * @param ProviderInterface<Redis|RedisCluster> $redisProvider
      *
      * @CacheNamespace("namespace")
      * @Named("redisProvider=redis")

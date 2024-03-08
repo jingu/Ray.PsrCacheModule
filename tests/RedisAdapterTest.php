@@ -19,7 +19,7 @@ class RedisAdapterTest extends TestCase
     /** @return array{0:string, 1: RedisAdapter} */
     public function testSerialize(): array
     {
-        $provider = new RedisProvider(['127.0.0.1', '6379']);
+        $provider = new RedisProvider(['127.0.0.1:6379'], false);
         $adapter = new RedisAdapter($provider);
         $adapter->get('foo', static function (ItemInterface $item) {
             return 'foobar';
@@ -62,7 +62,7 @@ class RedisAdapterTest extends TestCase
                 $this->install(new CacheDirModule('/tmp/a'));
                 $this->bind(AbstractAdapter::class)->to(RedisAdapter::class);
                 $this->bind(Redis::class);
-                $this->install(new Psr6RedisModule('127.0.0.1:6379:1'));
+                $this->install(new Psr6RedisModule('127.0.0.1:6379:1', false));
             }
         });
         $adapter = $injector->getInstance(AbstractAdapter::class);

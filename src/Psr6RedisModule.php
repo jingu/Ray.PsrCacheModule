@@ -10,6 +10,7 @@ use Ray\Di\ProviderInterface;
 use Ray\Di\Scope;
 use Ray\PsrCacheModule\Annotation\CacheNamespace;
 use Ray\PsrCacheModule\Annotation\Local;
+use Ray\PsrCacheModule\Annotation\RedisCluster;
 use Ray\PsrCacheModule\Annotation\RedisConfig;
 use Ray\PsrCacheModule\Annotation\Shared;
 use Redis;
@@ -21,11 +22,18 @@ use function explode;
 final class Psr6RedisModule extends AbstractModule
 {
     /** @var list<string> */
-    private $server;
+    private $servers;
 
-    public function __construct(string $server, ?AbstractModule $module = null)
-    {
-        $this->server = explode(':', $server);
+    /** @var bool  */
+    private $isCluster;
+
+    public function __construct(
+        string $servers,
+        bool $isCluster,
+        ?AbstractModule $module = null
+    ) {
+        $this->servers = explode(',', $servers);
+        $this->isCluster = $isCluster;
 
         parent::__construct($module);
     }
@@ -43,7 +51,8 @@ final class Psr6RedisModule extends AbstractModule
             'redisProvider' => 'redis',
             'namespace' => CacheNamespace::class,
         ]);
-        $this->bind()->annotatedWith(RedisConfig::class)->toInstance($this->server);
+        $this->bind()->annotatedWith(RedisConfig::class)->toInstance($this->servers);
+        $this->bind()->annotatedWith(RedisCluster::class)->toInstance($this->isCluster);
         $this->bind(ProviderInterface::class)->annotatedWith('redis')->to(RedisProvider::class);
     }
 }

@@ -20,6 +20,7 @@ class RedisProvider implements ProviderInterface
 {
     /** @var list<string> */
     private $servers;
+
     /** @var bool */
     private $cluster;
 

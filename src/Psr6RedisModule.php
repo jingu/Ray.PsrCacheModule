@@ -9,8 +9,8 @@ use Ray\Di\AbstractModule;
 use Ray\Di\ProviderInterface;
 use Ray\Di\Scope;
 use Ray\PsrCacheModule\Annotation\CacheNamespace;
-use Ray\PsrCacheModule\Annotation\RedisCluster;
 use Ray\PsrCacheModule\Annotation\Local;
+use Ray\PsrCacheModule\Annotation\RedisCluster;
 use Ray\PsrCacheModule\Annotation\RedisConfig;
 use Ray\PsrCacheModule\Annotation\Shared;
 use Redis;
@@ -26,8 +26,8 @@ final class Psr6RedisModule extends AbstractModule
     private bool $isCluster;
 
     public function __construct(
-        string          $servers,
-        bool            $isCluster,
+        string $servers,
+        bool $isCluster,
         ?AbstractModule $module = null
     ) {
         $this->servers = explode(',', $servers);

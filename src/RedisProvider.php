@@ -9,16 +9,19 @@ use Ray\PsrCacheModule\Annotation\RedisCluster as RedisClusterAnnotation;
 use Ray\PsrCacheModule\Annotation\RedisConfig;
 use Ray\PsrCacheModule\Exception\RedisConnectionException;
 use Redis;
-
 use RedisCluster;
+
+use function explode;
 use function sprintf;
+use function strpos;
 
 /** @implements ProviderInterface<Redis|RedisCluster> */
 class RedisProvider implements ProviderInterface
 {
     /** @var list<string> */
     private $servers;
-    private bool $cluster;
+    /** @var bool */
+    private $cluster;
 
     /**
      * @param list<string> $servers

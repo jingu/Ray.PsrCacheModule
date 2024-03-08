@@ -23,7 +23,9 @@ final class Psr6RedisModule extends AbstractModule
 {
     /** @var list<string> */
     private $servers;
-    private bool $isCluster;
+
+    /** @var bool  */
+    private $isCluster;
 
     public function __construct(
         string $servers,

@@ -27,7 +27,7 @@ class RedisProvider implements ProviderInterface
     /**
      * @param list<string> $servers
      *
-     * @RedisConfig("server")
+     * @RedisConfig("servers")
      * @RedisClusterAnnotation("cluster")
      */
     #[RedisConfig('servers')]

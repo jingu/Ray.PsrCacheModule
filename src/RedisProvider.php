@@ -41,7 +41,7 @@ class RedisProvider implements ProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function get(): Redis|RedisCluster
+    public function get()
     {
         if ($this->cluster) {
             return new RedisCluster(null, $this->servers);
